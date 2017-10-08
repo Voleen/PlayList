@@ -49,6 +49,7 @@ class Tracks
 		m3uFile.writePLFile();
 		for (Track trk : tracks)
 			m3uFile.writeString(trk.getPath() + '/' + trk.getFileName());
+		m3uFile.closePLFile();
 	}
 	public void shuffle()
 	{
@@ -134,15 +135,18 @@ class PlayListFile
 {
 	private static final String m3uTag = "#EXTM3U\n";
 	private String fname;
+	private BufferedWriter fileWriter;
+
 	public PlayListFile(String name)
 	{
 		fname = name;
 	}
 	public void writePLFile()
 	{
-		try(FileWriter file = new FileWriter(fname, false))
+		try // (FileWriter file = new FileWriter(fname, false))
 		{
-			file.write(m3uTag);
+			fileWriter = new BufferedWriter(new FileWriter(fname));
+			fileWriter.write(m3uTag);
 		}
 		catch(IOException ex){
 			System.out.println(ex.getMessage());
@@ -150,8 +154,17 @@ class PlayListFile
 	}
 	public void writeString(String str)
 	{
-		try(FileWriter file = new FileWriter(fname, true)) {
-			file.write(str + '\n');
+		try//(FileWriter file = new FileWriter(fname, true)) 
+		{
+			fileWriter.write(str + '\n');
 		} catch (IOException e) {e.printStackTrace(); }
+	}
+	public void closePLFile() {
+		try {
+		fileWriter.close();
+		} catch(IOException ex) {
+			System.out.println("Can't write file");
+			ex.printStackTrace();
+		}
 	}
 }
